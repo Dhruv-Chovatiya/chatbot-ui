@@ -10,7 +10,7 @@ pipeline{
     stages {
         stage('Checkout from Git'){
             steps{
-                git branch: 'legacy', url: 'https://github.com/vijaygiduthuri/chatbot-ui.git'
+                git branch: 'legacy', url: 'https://github.com/Dhruv-Chovatiya/chatbot-ui.git'
             }
         }
         stage('Install Dependencies') {
@@ -29,7 +29,7 @@ pipeline{
         stage("quality gate"){
            steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
                 }
             }
         }
@@ -49,20 +49,20 @@ pipeline{
                 script{
                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
                        sh "docker build -t chatbot ."
-                       sh "docker tag chatbot vijaygiduthuri/chatbot:latest "
-                       sh "docker push vijaygiduthuri/chatbot:latest "
+                       sh "docker tag chatbot dhruvchovatiya63907/chatbot:latest "
+                       sh "docker push dhruvchovatiya63907/chatbot:latest "
                     }
                 }
             }
         }
         stage("TRIVY"){
             steps{
-                sh "trivy image vijaygiduthuri/chatbot:latest > trivy.json"
+                sh "trivy image dhruvchovatiya63907/chatbot:latest > trivy.json"
             }
         }
         stage('Deploy to container'){
             steps{
-                sh 'docker run -d --name chat -p 3000:3000 vijaygiduthuri/chatbot:latest'
+                sh 'docker run -d --name chat -p 3000:3000 dhruvchovatiya63907/chatbot:latest'
             }
         }
         stage('Deploy to kubernets'){
